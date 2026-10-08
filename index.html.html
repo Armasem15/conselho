@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEF Grecia D - Ficha Individual de Pré-Conselho de Classe</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+            #printable-area, #printable-area * {
+                visibility: visible !important;
+            }
+            #printable-area {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 12mm !important;
+                box-shadow: none !important;
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+        }
+
+        .paper-shadow {
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15), 0 10px 15px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Canvas pad style */
+        .signature-canvas {
+            touch-action: none;
+            background-color: #fafafa;
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.75rem;
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
+
+    <!-- TELA DE LOGIN OBRIGATÓRIA INICIAL -->
+    <div id="login-screen" class="fixed inset-0 z-50 bg-slate-900 flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black overflow-y-auto">
+        <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden my-auto border border-slate-700/50">
+            <!-- Header do Login -->
+            <div class="bg-brand-900 p-6 text-white text-center relative overflow-hidden">
+                <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-brand-600/20 rounded-full blur-xl"></div>
+                <div class="inline-flex p-3 bg-white/10 rounded-2xl mb-3 backdrop-blur-md border border-white/20">
+                    <i class="fa-solid fa-graduation-cap text-3xl text-amber-400"></i>
+                </div>
+                <h2 class="text-2xl font-black tracking-wide">CEF GRECIA D</h2>
+                <p class="text-xs text-brand-100 font-medium mt-1">Ficha Individual - Pré-Conselho de Classe</p>
+            </div>
+
+            <!-- Formulário de Login -->
+            <div class="p-6 sm:p-8 space-y-6">
+                <!-- Selector de Perfil -->
+                <div class="flex p-1 bg-slate-100 rounded-xl">
+                    <button type="button" id="login-type-prof" onclick="switchLoginType('professor')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all shadow-sm bg-white text-brand-900">
+                        <i class="fa-solid fa-chalkboard-user mr-1.5"></i> Professor(a)
+                    </button>
+                    <button type="button" id="login-type-admin" onclick="switchLoginType('admin')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-900">
+                        <i class="fa-solid fa-user-shield mr-1.5"></i> Gestão (Ped/Dir)
+                    </button>
+                </div>
+
+                <form onsubmit="executeLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Usuário / CPF *</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-solid fa-user text-sm"></i></span>
+                            <input type="text" id="login-username" required placeholder="Digite seu usuário..." class="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none bg-slate-50 focus:bg-white">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Senha de Acesso *</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-solid fa-lock text-sm"></i></span>
+                            <input type="password" id="login-password" required value="123456" placeholder="••••••••" class="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none bg-slate-50 focus:bg-white">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm shadow-lg shadow-brand-600/30 transition-all flex items-center justify-center space-x-2">
+                        <span>Entrar no Sistema</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </form>
+
+                <!-- Acesso Rápido de Demonstração -->
+                <div class="pt-4 border-t border-slate-100">
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center mb-3">Acesso Rápido de Teste:</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <button type="button" onclick="quickLogin('prof')" class="p-2 border border-blue-200 bg-blue-50 hover:bg-blue-100 rounded-xl text-left transition flex items-center space-x-2">
+                            <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-bold"><i class="fa-solid fa-user-pen"></i></div>
+                            <div>
+                                <p class="text-[11px] font-bold text-blue-900 leading-tight">Prof. Carlos</p>
+                                <p class="text-[9px] text-blue-600">Docente</p>
+                            </div>
+                        </button>
+                        <button type="button" onclick="quickLogin('pedagoga')" class="p-2 border border-amber-200 bg-amber-50 hover:bg-amber-100 rounded-xl text-left transition flex items-center space-x-2">
+                            <div class="w-7 h-7 rounded-lg bg-amber-600 text-white flex items-center justify-center text-xs font-bold"><i class="fa-solid fa-clipboard-user"></i></div>
+                            <div>
+                                <p class="text-[11px] font-bold text-amber-900 leading-tight">Ped. Mônica</p>
+                                <p class="text-[9px] text-amber-600">Pedagoga</p>
+                            </div>
+                        </button>
+                        <button type="button" onclick="quickLogin('diretora')" class="p-2 border border-purple-200 bg-purple-50 hover:bg-purple-100 rounded-xl text-left transition flex items-center space-x-2">
+                            <div class="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs font-bold"><i class="fa-solid fa-award"></i></div>
+                            <div>
+                                <p class="text-[11px] font-bold text-purple-900 leading-tight">Dir. Ana</p>
+                                <p class="text-[9px] text-purple-600">Diretora</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CABEÇALHO DO SISTEMA (Apenas Visível após Login) -->
+    <header class="bg-brand-900 text-white shadow-lg sticky top-0 z-30 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logotipo & Nome CEF Grecia D -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white/10 p-2 rounded-xl backdrop-blur-sm border border-white/20">
+                        <i class="fa-solid fa-graduation-cap text-2xl text-amber-400"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-black text-lg leading-tight tracking-wide">CEF GRECIA D</h1>
+                        <p class="text-xs text-brand-100 font-medium">Pré-Conselho de Classe de Ensino Fundamental</p>
+                    </div>
+                </div>
+
+                <!-- Perfil do Usuário Logado & Botão Sair -->
+                <div class="flex items-center space-x-3">
+                    <div class="hidden sm:flex items-center space-x-2 bg-brand-800/80 border border-brand-700/60 px-3 py-1.5 rounded-xl text-xs">
+                        <i class="fa-solid fa-circle-user text-amber-400 text-base"></i>
+                        <div>
+                            <p id="user-display-name" class="font-bold text-white leading-tight">Prof. Carlos</p>
+                            <p id="user-display-role" class="text-[10px] text-brand-100">Professor(a)</p>
+                        </div>
+                    </div>
+
+                    <button onclick="logout()" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow flex items-center space-x-1.5">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span class="hidden md:inline">Sair</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- Notificação Toast -->
+        <div id="toast-notification" class="hidden mb-4 p-4 rounded-xl flex items-center justify-between shadow-md transition-all duration-300">
+            <div class="flex items-center space-x-3">
+                <i id="toast-icon" class="fa-solid text-xl"></i>
+                <span id="toast-message" class="text-sm font-semibold"></span>
+            </div>
+            <button onclick="hideToast()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <!-- Abas de Navegação Principal -->
+        <div class="flex flex-wrap border-b border-slate-200 mb-6 bg-white p-2 rounded-2xl shadow-sm border border-slate-200 gap-2">
+            <!-- Aba Nova Ficha (Somente visível para Professor) -->
+            <button id="tab-btn-nova-ficha" onclick="showTab('nova-ficha')" class="tab-btn flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200">
+                <i class="fa-solid fa-file-circle-plus"></i>
+                <span>Preencher Nova Ficha</span>
+            </button>
+
+            <!-- Aba Registros por Aluno (Visível para Todos) -->
+            <button id="tab-btn-alunos" onclick="showTab('alunos')" class="tab-btn flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200">
+                <i class="fa-solid fa-id-card"></i>
+                <span>Registros por Aluno</span>
+            </button>
+
+            <!-- Aba Painel Gestor (Pedagoga / Diretora) -->
+            <button id="tab-btn-admin" onclick="showTab('admin')" class="tab-btn flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Painel da Gestão</span>
+            </button>
+        </div>
+
+        <!-- SEÇÃO 1: FORMULÁRIO DE NOVA FICHA -->
+        <section id="section-nova-ficha" class="space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 mb-6 border-b border-slate-100 gap-4">
+                    <div>
+                        <h2 class="text-xl font-black text-slate-800 flex items-center space-x-2">
+                            <i class="fa-solid fa-file-pen text-brand-600"></i>
+                            <span>Ficha Individual - Pré-Conselho de Classe</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Preencha os dados do estudante e o parecer do componente curricular.</p>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <button onclick="resetForm()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Limpar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <form id="pre-conselho-form" onsubmit="handleFormSubmit(event)" class="space-y-6">
+                    <input type="hidden" id="form-id" value="">
+
+                    <!-- CABEÇALHO COM IDENTIFICAÇÃO DESTACADA DO ALUNO -->
+                    <div class="p-5 bg-gradient-to-r from-blue-50/80 via-slate-50 to-blue-50/50 rounded-2xl border border-blue-200/80 space-y-4">
+                        <div class="text-xs font-bold text-brand-900 uppercase tracking-wider flex items-center space-x-2">
+                            <i class="fa-solid fa-user-graduate text-brand-600"></i>
+                            <span>Identificação do Aluno(a) e do Componente</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                            <!-- NOME DO ALUNO -->
+                            <div class="md:col-span-8">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                    Nome do Aluno(a) <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" id="form-aluno-nome" required placeholder="Ex: Ana Clara Santos" class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                            </div>
+
+                            <!-- Nº DE CHAMADA OU MATRÍCULA -->
+                            <div class="md:col-span-4">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                    Nº de Chamada / Matrícula <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" id="form-aluno-numero" required placeholder="Ex: Nº 03" class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                            </div>
+
+                            <!-- PROFESSOR -->
+                            <div class="md:col-span-4">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                    Professor(a) <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" id="form-professor" required placeholder="Nome do professor" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                            </div>
+
+                            <!-- COMPONENTE CURRICULAR -->
+                            <div class="md:col-span-3">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                    Componente Curricular <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="form-componente" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                                    <option value="">Selecione...</option>
+                                    <option value="Língua Portuguesa">Língua Portuguesa</option>
+                                    <option value="Matemática">Matemática</option>
+                                    <option value="Ciências">Ciências</option>
+                                    <option value="História">História</option>
+                                    <option value="Geografia">Geografia</option>
+                                    <option value="Língua Inglesa">Língua Inglesa</option>
+                                    <option value="Educação Física">Educação Física</option>
+                                    <option value="Arte">Arte</option>
+                                    <option value="Ensino Religioso">Ensino Religioso</option>
+                                </select>
+                            </div>
+
+                            <!-- TURMA -->
+                            <div class="md:col-span-3">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                    Turma <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="form-turma" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                                    <option value="">Selecione...</option>
+                                    <option value="6º Ano A">6º Ano A</option>
+                                    <option value="6º Ano B">6º Ano B</option>
+                                    <option value="7º Ano A">7º Ano A</option>
+                                    <option value="7º Ano B">7º Ano B</option>
+                                    <option value="8º Ano A">8º Ano A</option>
+                                    <option value="8º Ano B">8º Ano B</option>
+                                    <option value="9º Ano A">9º Ano A</option>
+                                    <option value="9º Ano B">9º Ano B</option>
+                                </select>
+                            </div>
+
+                            <!-- DATA -->
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                    Data <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="date" id="form-data" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 1. PANORAMA DA TURMA E DO ALUNO -->
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                        <div class="bg-brand-900 text-white px-4 py-3 font-bold text-xs uppercase tracking-wider flex items-center justify-between">
+                            <span>1. PANORAMA DA TURMA E DO ALUNO</span>
+                            <i class="fa-solid fa-users text-brand-100"></i>
+                        </div>
+                        <div class="p-4 space-y-4 bg-white">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Como você avalia o desenvolvimento geral do estudante e da turma em relação à aprendizagem?</label>
+                                <textarea id="form-panorama-desenvolvimento" rows="3" required placeholder="Descreva a evolução do estudante e o comportamento geral da turma..." class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none custom-scrollbar"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Como está a participação, o envolvimento e a postura dos estudantes/do estudante nas aulas?</label>
+                                <textarea id="form-panorama-postura" rows="3" required placeholder="Relate a participação em sala, compromisso com trabalhos, disciplina e foco..." class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none custom-scrollbar"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. APRENDIZAGEM E FREQUÊNCIA -->
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                        <div class="bg-brand-900 text-white px-4 py-3 font-bold text-xs uppercase tracking-wider flex items-center justify-between">
+                            <span>2. APRENDIZAGEM E FREQUÊNCIA</span>
+                            <i class="fa-solid fa-book-open text-brand-100"></i>
+                        </div>
+                        <div class="p-4 space-y-4 bg-white">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Quais habilidades/conteúdos apresentam maior dificuldade para o estudante/turma?</label>
+                                <textarea id="form-aprendizagem-dificuldades" rows="3" required placeholder="Especifique conteúdos curriculares não consolidados ou lacunas de aprendizagem..." class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none custom-scrollbar"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">O estudante/turma apresenta baixa frequência ou necessita de acompanhamento mais próximo? Descreva quais e por quê.</label>
+                                <textarea id="form-aprendizagem-frequencia" rows="3" required placeholder="Indique percentual aproximado de faltas ou justificativas registradas..." class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none custom-scrollbar"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. DESTAQUES E SITUAÇÕES QUE MERECEM ATENÇÃO -->
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                        <div class="bg-brand-900 text-white px-4 py-3 font-bold text-xs uppercase tracking-wider flex items-center justify-between">
+                            <span>3. DESTAQUES E SITUAÇÕES QUE MERECEM ATENÇÃO</span>
+                            <i class="fa-solid fa-star text-brand-100"></i>
+                        </div>
+                        <div class="p-4 space-y-4 bg-white">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Estudantes/Estudante que se destacaram positivamente (aprendizagem, participação, responsabilidade ou protagonismo):</label>
+                                <textarea id="form-destaques-positivos" rows="3" required placeholder="Destaques na postura, cooperação ou dedicação acadêmica..." class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none custom-scrollbar"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Estudantes/Estudante que apresentam dificuldades significativas ou necessitam de intervenção/encaminhamento:</label>
+                                <textarea id="form-destaques-atencao" rows="3" required placeholder="Pontos críticos de atenção comportamental, cognitiva ou familiar..." class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none custom-scrollbar"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. ENCAMINHAMENTOS -->
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                        <div class="bg-brand-900 text-white px-4 py-3 font-bold text-xs uppercase tracking-wider flex items-center justify-between">
+                            <span>4. ENCAMINHAMENTOS</span>
+                            <i class="fa-solid fa-route text-brand-100"></i>
+                        </div>
+                        <div class="p-4 space-y-4 bg-white">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Quais estratégias já foram realizadas e quais ações você sugere para o próximo período?</label>
+                                <textarea id="form-encaminhamento-estrategias" rows="3" required placeholder="Relate reforço paralelo, conversas individuais e sugestões pedagógicas..." class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none custom-scrollbar"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Há alguma observação importante que deve ser registrada no Pré-Conselho?</label>
+                                <textarea id="form-encaminhamento-obs" rows="2" placeholder="Outras considerações para a equipe pedagógica..." class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none custom-scrollbar"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. SÍNTESE DO PROFESSOR -->
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                        <div class="bg-brand-900 text-white px-4 py-3 font-bold text-xs uppercase tracking-wider flex items-center justify-between">
+                            <span>5. SÍNTESE DO PROFESSOR</span>
+                            <i class="fa-solid fa-comment-dots text-brand-100"></i>
+                        </div>
+                        <div class="p-4 bg-white">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Deixe aqui uma observação geral sobre a turma e/ou sobre o estudante que considere relevante para o Conselho de Classe:</label>
+                            <textarea id="form-sintese-geral" rows="3" required placeholder="Parecer síntese final para constar em ata do conselho de classe..." class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none custom-scrollbar"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 6. CAMPO DE ASSINATURA CANVAS DIGITAL -->
+                    <div class="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                <i class="fa-solid fa-signature mr-1 text-brand-600"></i> Assinatura Digital do(a) Professor(a)
+                            </label>
+                            <button type="button" onclick="clearSignatureCanvas()" class="text-xs text-rose-600 hover:text-rose-800 font-bold flex items-center space-x-1">
+                                <i class="fa-solid fa-eraser"></i> <span>Limpar Desenho</span>
+                            </button>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Desenhe sua assinatura abaixo usando o mouse ou o toque na tela:</p>
+                        
+                        <div class="relative w-full max-w-md mx-auto">
+                            <canvas id="signature-canvas" width="400" height="120" class="signature-canvas w-full"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- CONFIRMAÇÃO E ENVIO -->
+                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" id="form-assinatura-confirm" required class="w-5 h-5 text-brand-600 rounded border-slate-300 focus:ring-brand-500 cursor-pointer">
+                            <label for="form-assinatura-confirm" class="text-xs font-medium text-slate-700 cursor-pointer">
+                                Declaro que as informações registradas são autênticas e assino digitalmente esta Ficha de Pré-Conselho.
+                            </label>
+                        </div>
+                        <button type="submit" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white font-bold px-8 py-3 rounded-xl text-sm shadow-lg transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Salvar Ficha do Aluno</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 2: REGISTROS POR ALUNO (CONSULTA E HISTÓRICO) -->
+        <section id="section-alunos" class="space-y-6 hidden">
+            <!-- Barra de Busca de Alunos -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-black text-slate-800 flex items-center space-x-2">
+                            <i class="fa-solid fa-id-card text-brand-600"></i>
+                            <span>Consulta de Registros por Aluno</span>
+                        </h3>
+                        <p class="text-xs text-slate-500">Pesquise pelo nome do aluno ou número de chamada para ver todas as fichas lançadas.</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- Pesquisa por Texto -->
+                        <div class="relative min-w-[240px]">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-solid fa-magnifying-glass text-xs"></i></span>
+                            <input type="text" id="search-aluno-input" onkeyup="renderAlunosView()" placeholder="Buscar nome do aluno ou Nº..." class="w-full pl-8 pr-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+
+                        <!-- Filtro por Turma -->
+                        <select id="search-aluno-turma" onchange="renderAlunosView()" class="px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                            <option value="">Todas as Turmas</option>
+                            <option value="6º Ano A">6º Ano A</option>
+                            <option value="6º Ano B">6º Ano B</option>
+                            <option value="7º Ano A">7º Ano A</option>
+                            <option value="7º Ano B">7º Ano B</option>
+                            <option value="8º Ano A">8º Ano A</option>
+                            <option value="8º Ano B">8º Ano B</option>
+                            <option value="9º Ano A">9º Ano A</option>
+                            <option value="9º Ano B">9º Ano B</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista Agrupada por Aluno -->
+            <div id="alunos-grouped-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Preenchido via JavaScript -->
+            </div>
+        </section>
+
+        <!-- SEÇÃO 3: PAINEL DA GESTÃO (PEDAGOGA & DIRETORA) -->
+        <section id="section-admin" class="space-y-6 hidden">
+            <!-- Estatísticas da Gestão -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total de Fichas</p>
+                        <h4 id="stat-total" class="text-2xl font-black text-slate-800">0</h4>
+                    </div>
+                    <div class="bg-blue-100 text-blue-600 p-3 rounded-2xl"><i class="fa-solid fa-file-signature text-xl"></i></div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Pendentes Pedagoga</p>
+                        <h4 id="stat-pend-pedagoga" class="text-2xl font-black text-amber-600">0</h4>
+                    </div>
+                    <div class="bg-amber-100 text-amber-600 p-3 rounded-2xl"><i class="fa-solid fa-clock text-xl"></i></div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Pendentes Diretora</p>
+                        <h4 id="stat-pend-diretora" class="text-2xl font-black text-purple-600">0</h4>
+                    </div>
+                    <div class="bg-purple-100 text-purple-600 p-3 rounded-2xl"><i class="fa-solid fa-pen-nib text-xl"></i></div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Assinado</p>
+                        <h4 id="stat-concluidas" class="text-2xl font-black text-emerald-600">0</h4>
+                    </div>
+                    <div class="bg-emerald-100 text-emerald-600 p-3 rounded-2xl"><i class="fa-solid fa-circle-check text-xl"></i></div>
+                </div>
+            </div>
+
+            <!-- Tabela Geral de Fichas -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-black text-slate-800 text-base">Gerenciamento Geral do Pré-Conselho</h3>
+                        <p class="text-xs text-slate-500">Validação e assinatura digital pedagógica e diretiva.</p>
+                    </div>
+
+                    <!-- Botão discreto para Backend SQL para desenvolvedores no painel admin -->
+                    <button onclick="toggleModal('backend-modal', true)" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
+                        <i class="fa-solid fa-code"></i>
+                        <span>Código Backend (VS Code / MySQL)</span>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-600">
+                        <thead class="bg-slate-100 text-slate-700 uppercase tracking-wider font-bold">
+                            <tr>
+                                <th class="p-3">Aluno(a) / Nº</th>
+                                <th class="p-3">Turma / Componente</th>
+                                <th class="p-3">Professor(a)</th>
+                                <th class="p-3">Pedagoga</th>
+                                <th class="p-3">Diretora</th>
+                                <th class="p-3 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-fichas-list" class="divide-y divide-slate-100">
+                            <!-- Populado via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL DE VISUALIZAÇÃO DA FICHA OFICIAL IMPRESSA EM A4 -->
+    <div id="view-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[95vh] flex flex-col shadow-2xl border border-slate-200 my-auto">
+            <!-- Barra Superior do Modal -->
+            <div class="p-4 bg-slate-900 text-white rounded-t-2xl flex items-center justify-between no-print">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-file-contract text-amber-400"></i>
+                    <span class="font-bold text-xs sm:text-sm">Documento Oficial A4 - CEF Grecia D</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="printDocument()" class="bg-brand-600 hover:bg-brand-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow transition">
+                        <i class="fa-solid fa-print"></i>
+                        <span>Imprimir / PDF</span>
+                    </button>
+                    <button onclick="toggleModal('view-modal', false)" class="text-slate-400 hover:text-white px-2 py-1 text-lg">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Folha A4 Réplica Oficial para Leitura e Impressão -->
+            <div class="p-4 sm:p-8 overflow-y-auto custom-scrollbar bg-slate-200 flex justify-center">
+                <div id="printable-area" class="bg-white p-8 sm:p-12 rounded-sm paper-shadow max-w-[210mm] w-full text-slate-900 space-y-5 text-xs">
+                    
+                    <!-- Cabeçalho Oficial Exigido -->
+                    <div class="text-center border-b-2 border-slate-900 pb-3 space-y-0.5">
+                        <h2 class="font-black text-xl tracking-widest text-slate-900">ENSINO</h2>
+                        <h3 class="font-extrabold text-lg text-slate-800 tracking-wide">CEF GRECIA D</h3>
+                        <p class="font-black text-sm bg-slate-100 border border-slate-400 py-1.5 my-2 uppercase tracking-wider text-slate-900">
+                            FICHA INDIVIDUAL - PRÉ-CONSELHO DE CLASSE
+                        </p>
+                    </div>
+
+                    <!-- Campos Obrigatórios de Identificação -->
+                    <div class="grid grid-cols-2 gap-2 border border-slate-900 p-3 bg-slate-50/50 text-xs">
+                        <div class="col-span-2 sm:col-span-1"><strong>Estudante:</strong> <span id="doc-aluno-nome" class="font-bold uppercase"></span></div>
+                        <div class="col-span-2 sm:col-span-1"><strong>Nº / Matrícula:</strong> <span id="doc-aluno-numero" class="font-bold"></span></div>
+                        <div><strong>Professor(a):</strong> <span id="doc-professor"></span></div>
+                        <div><strong>Componente:</strong> <span id="doc-componente"></span></div>
+                        <div><strong>Turma:</strong> <span id="doc-turma"></span></div>
+                        <div><strong>Data:</strong> <span id="doc-data"></span></div>
+                    </div>
+
+                    <!-- 1. PANORAMA DA TURMA E DO ALUNO -->
+                    <div class="space-y-1">
+                        <h4 class="font-bold text-[11px] uppercase bg-slate-200 p-1 border-l-4 border-slate-900">1. PANORAMA DA TURMA E DO ALUNO</h4>
+                        <div class="pl-2 space-y-2">
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-700">Como você avalia o desenvolvimento geral do estudante e da turma em relação à aprendizagem?</p>
+                                <p id="doc-panorama-desenvolvimento" class="bg-slate-50 p-2 rounded border border-slate-200 italic whitespace-pre-line text-xs"></p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-700">Como está a participação, o envolvimento e a postura dos estudantes/do estudante nas aulas?</p>
+                                <p id="doc-panorama-postura" class="bg-slate-50 p-2 rounded border border-slate-200 italic whitespace-pre-line text-xs"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. APRENDIZAGEM E FREQUÊNCIA -->
+                    <div class="space-y-1">
+                        <h4 class="font-bold text-[11px] uppercase bg-slate-200 p-1 border-l-4 border-slate-900">2. APRENDIZAGEM E FREQUÊNCIA</h4>
+                        <div class="pl-2 space-y-2">
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-700">Quais habilidades/conteúdos apresentam maior dificuldade para o estudante/turma?</p>
+                                <p id="doc-aprendizagem-dificuldades" class="bg-slate-50 p-2 rounded border border-slate-200 italic whitespace-pre-line text-xs"></p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-700">O estudante/turma apresenta baixa frequência ou necessita de acompanhamento mais próximo? Descreva quais e por quê.</p>
+                                <p id="doc-aprendizagem-frequencia" class="bg-slate-50 p-2 rounded border border-slate-200 italic whitespace-pre-line text-xs"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. DESTAQUES E SITUAÇÕES QUE MERECEM ATENÇÃO -->
+                    <div class="space-y-1">
+                        <h4 class="font-bold text-[11px] uppercase bg-slate-200 p-1 border-l-4 border-slate-900">3. DESTAQUES E SITUAÇÕES QUE MERECEM ATENÇÃO</h4>
+                        <div class="pl-2 space-y-2">
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-700">Estudantes/Estudante que se destacaram positivamente (aprendizagem, participação, responsabilidade ou protagonismo):</p>
+                                <p id="doc-destaques-positivos" class="bg-slate-50 p-2 rounded border border-slate-200 italic whitespace-pre-line text-xs"></p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-700">Estudantes/Estudante que apresentam dificuldades significativas ou necessitam de intervenção/encaminhamento:</p>
+                                <p id="doc-destaques-atencao" class="bg-slate-50 p-2 rounded border border-slate-200 italic whitespace-pre-line text-xs"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. ENCAMINHAMENTOS -->
+                    <div class="space-y-1">
+                        <h4 class="font-bold text-[11px] uppercase bg-slate-200 p-1 border-l-4 border-slate-900">4. ENCAMINHAMENTOS</h4>
+                        <div class="pl-2 space-y-2">
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-700">Quais estratégias já foram realizadas e quais ações você sugere para o próximo período?</p>
+                                <p id="doc-encaminhamento-estrategias" class="bg-slate-50 p-2 rounded border border-slate-200 italic whitespace-pre-line text-xs"></p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-700">Há alguma observação importante que deve ser registrada no Pré-Conselho?</p>
+                                <p id="doc-encaminhamento-obs" class="bg-slate-50 p-2 rounded border border-slate-200 italic whitespace-pre-line text-xs"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. SÍNTESE DO PROFESSOR -->
+                    <div class="space-y-1">
+                        <h4 class="font-bold text-[11px] uppercase bg-slate-200 p-1 border-l-4 border-slate-900">5. SÍNTESE DO PROFESSOR</h4>
+                        <div class="pl-2">
+                            <p class="text-[10px] font-bold text-slate-700">Deixe aqui uma observação geral sobre a turma e/ou sobre o estudante que considere relevante para o Conselho de Classe:</p>
+                            <p id="doc-sintese-geral" class="bg-slate-50 p-2 rounded border border-slate-200 italic whitespace-pre-line text-xs"></p>
+                        </div>
+                    </div>
+
+                    <!-- Bloco de Assinaturas das 3 Autoridades -->
+                    <div class="pt-6 grid grid-cols-3 gap-4 text-center text-[11px]">
+                        <!-- Professor -->
+                        <div class="flex flex-col justify-end items-center space-y-1">
+                            <div id="doc-sign-prof-stamp" class="min-h-[45px] flex items-center justify-center w-full"></div>
+                            <div class="border-t border-slate-800 w-full pt-1 font-bold">
+                                Assinatura do(a) professor(a)
+                            </div>
+                        </div>
+
+                        <!-- Pedagoga -->
+                        <div class="flex flex-col justify-end items-center space-y-1">
+                            <div id="doc-sign-pedagoga-stamp" class="min-h-[45px] flex items-center justify-center w-full"></div>
+                            <div class="border-t border-slate-800 w-full pt-1 font-bold">
+                                Assinatura da pedagoga
+                            </div>
+                            <div class="no-print pt-1" id="action-sign-pedagoga"></div>
+                        </div>
+
+                        <!-- Diretora -->
+                        <div class="flex flex-col justify-end items-center space-y-1">
+                            <div id="doc-sign-diretora-stamp" class="min-h-[45px] flex items-center justify-center w-full"></div>
+                            <div class="border-t border-slate-800 w-full pt-1 font-bold">
+                                Assinatura da diretora
+                            </div>
+                            <div class="no-print pt-1" id="action-sign-diretora"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE BACKEND SQL / NODEJS (Apenas acessível via painel admin) -->
+    <div id="backend-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 my-auto">
+            <div class="p-4 bg-slate-900 text-white rounded-t-2xl flex items-center justify-between">
+                <span class="font-bold text-xs sm:text-sm"><i class="fa-solid fa-database text-emerald-400 mr-2"></i> Script MySQL & Node.js para VS Code</span>
+                <button onclick="toggleModal('backend-modal', false)" class="text-slate-400 hover:text-white px-2 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-4 text-xs">
+                <p class="text-slate-600">Copie a tabela MySQL abaixo para persistência em servidor de produção:</p>
+                <pre class="bg-slate-900 text-emerald-400 p-4 rounded-xl font-mono text-[11px] overflow-x-auto">
+CREATE DATABASE IF NOT EXISTS cef_grecia_d;
+USE cef_grecia_d;
+
+CREATE TABLE IF NOT EXISTS fichas_pre_conselho (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aluno_nome VARCHAR(150) NOT NULL,
+    aluno_numero VARCHAR(50) NOT NULL,
+    professor VARCHAR(150) NOT NULL,
+    componente VARCHAR(100) NOT NULL,
+    turma VARCHAR(50) NOT NULL,
+    data DATE NOT NULL,
+    panorama_desenvolvimento TEXT NOT NULL,
+    panorama_postura TEXT NOT NULL,
+    aprendizagem_dificuldades TEXT NOT NULL,
+    aprendizagem_frequencia TEXT NOT NULL,
+    destaques_positivos TEXT NOT NULL,
+    destaques_atencao TEXT NOT NULL,
+    encaminhamento_estrategias TEXT NOT NULL,
+    encaminhamento_obs TEXT,
+    sintese_geral TEXT NOT NULL,
+    assinatura_prof_img LONGTEXT,
+    assinado_prof TINYINT(1) DEFAULT 1,
+    data_assinado_prof DATETIME DEFAULT CURRENT_TIMESTAMP,
+    assinado_pedagoga TINYINT(1) DEFAULT 0,
+    nome_pedagoga VARCHAR(150),
+    data_assinado_pedagoga DATETIME,
+    assinado_diretora TINYINT(1) DEFAULT 0,
+    nome_diretora VARCHAR(150),
+    data_assinado_diretora DATETIME
+);</pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chave do LocalStorage
+        const STORAGE_KEY = 'cef_grecia_d_fichas_v2';
+        
+        // Estado do Usuário Logado
+        let currentUser = null; // { name, role: 'professor'|'pedagoga'|'diretora', type: 'prof'|'admin' }
+        let currentActiveFichaId = null;
+
+        // Canvas Signature Pad state
+        let canvas, ctx, isDrawing = false;
+
+        // Dados Pré-Carregados de Exemplo para Testes Imediatos com Alunos
+        const initialMockData = [
+            {
+                id: 201,
+                aluno_nome: "Ana Clara Santos",
+                aluno_numero: "Nº 03",
+                professor: "Prof. Carlos Eduardo",
+                componente: "Matemática",
+                turma: "6º Ano A",
+                data: "2026-10-01",
+                panorama_desenvolvimento: "Ana Clara apresenta excelente raciocínio lógico e apreensão rápida de algoritmos.",
+                panorama_postura: "Estudante extremamente pontual, colaborativa e líder de grupo.",
+                aprendizagem_dificuldades: "Apenas pequenas dúvidas em frações equivalentes.",
+                aprendizagem_frequencia: "Frequência exemplar de 98% de assiduidade.",
+                destaques_positivos: "Destaque na Olimpíada Interna de Matemática.",
+                destaques_atencao: "Nenhum ponto negativo registrado.",
+                encaminhamento_estrategias: "Manter desafios e monitoria entre pares.",
+                encaminhamento_obs: "Apta para receber diploma de mérito acadêmico.",
+                sintese_geral: "Desempenho acadêmico e comportamental irretocável.",
+                assinado_prof: true,
+                data_assinado_prof: "01/10/2026 09:30",
+                assinado_pedagoga: true,
+                nome_pedagoga: "Pedagoga Mônica",
+                data_assinado_pedagoga: "02/10/2026 14:15",
+                assinado_diretora: false,
+                nome_diretora: null,
+                data_assinado_diretora: null,
+                assinatura_prof_img: null
+            },
+            {
+                id: 202,
+                aluno_nome: "Lucas Gabriel Oliveira",
+                aluno_numero: "Nº 14",
+                professor: "Prof. Carlos Eduardo",
+                componente: "Matemática",
+                turma: "7º Ano B",
+                data: "2026-10-03",
+                panorama_desenvolvimento: "Apresenta ritmo mais lento e oscilação de atenção durante as explicações no quadro.",
+                panorama_postura: "Conversas paralelas frequentes com colegas próximos.",
+                aprendizagem_dificuldades: "Equações de 1º grau e regra de sinais.",
+                aprendizagem_frequencia: "Acurácia de faltas em 20% no último bimestre.",
+                destaques_positivos: "Muito criativo em resoluções práticas e desenhos.",
+                destaques_atencao: "Necessita de acompanhamento da equipe de apoio pedagógico.",
+                encaminhamento_estrategias: "Atendimento no contraturno e alteração do lugar na sala de aula.",
+                encaminhamento_obs: "Comunicar aos responsáveis em reunião presencial.",
+                sintese_geral: "Requer intervenção conjunta família-escola.",
+                assinado_prof: true,
+                data_assinado_prof: "03/10/2026 11:20",
+                assinado_pedagoga: false,
+                nome_pedagoga: null,
+                data_assinado_pedagoga: null,
+                assinado_diretora: false,
+                nome_diretora: null,
+                data_assinado_diretora: null,
+                assinatura_prof_img: null
+            }
+        ];
+
+        // Fetch do LocalStorage
+        function getFichas() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (!stored) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(initialMockData));
+                return initialMockData;
+            }
+            return JSON.parse(stored);
+        }
+
+        function saveFichas(fichas) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(fichas));
+        }
+
+        let activeLoginType = 'professor';
+
+        function switchLoginType(type) {
+            activeLoginType = type;
+            const btnProf = document.getElementById('login-type-prof');
+            const btnAdmin = document.getElementById('login-type-admin');
+
+            if (type === 'professor') {
+                btnProf.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all shadow-sm bg-white text-brand-900";
+                btnAdmin.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-900";
+            } else {
+                btnAdmin.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all shadow-sm bg-white text-brand-900";
+                btnProf.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-900";
+            }
+        }
+
+        function quickLogin(roleKey) {
+            if (roleKey === 'prof') {
+                currentUser = { name: "Prof. Carlos Eduardo", role: "professor", type: "prof" };
+            } else if (roleKey === 'pedagoga') {
+                currentUser = { name: "Pedagoga Mônica", role: "pedagoga", type: "admin" };
+            } else if (roleKey === 'diretora') {
+                currentUser = { name: "Diretora Ana Paula", role: "diretora", type: "admin" };
+            }
+            completeLogin();
+        }
+
+        function executeLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('login-username').value || "Usuário";
+            if (activeLoginType === 'professor') {
+                currentUser = { name: username.startsWith("Prof") ? username : `Prof. ${username}`, role: "professor", type: "prof" };
+            } else {
+                currentUser = { name: username, role: "pedagoga", type: "admin" };
+            }
+            completeLogin();
+        }
+
+        function completeLogin() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('user-display-name').innerText = currentUser.name;
+            document.getElementById('user-display-role').innerText = currentUser.role.toUpperCase();
+
+            // Auto-fill professor name in form if teacher
+            if (currentUser.role === 'professor') {
+                document.getElementById('form-professor').value = currentUser.name;
+            }
+
+            // Show appropriate default tabs
+            if (currentUser.type === 'prof') {
+                showTab('nova-ficha');
+            } else {
+                showTab('admin');
+            }
+
+            showToast(`Bem-vindo(a), ${currentUser.name}!`, 'success');
+            initCanvas();
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('login-screen').classList.remove('hidden');
+            showToast('Sessão encerrada com sucesso.', 'info');
+        }
+
+        function showTab(tabName) {
+            const secNova = document.getElementById('section-nova-ficha');
+            const secAlunos = document.getElementById('section-alunos');
+            const secAdmin = document.getElementById('section-admin');
+
+            const btnNova = document.getElementById('tab-btn-nova-ficha');
+            const btnAlunos = document.getElementById('tab-btn-alunos');
+            const btnAdmin = document.getElementById('tab-btn-admin');
+
+            secNova.classList.add('hidden');
+            secAlunos.classList.add('hidden');
+            secAdmin.classList.add('hidden');
+
+            const inactiveBtn = "tab-btn flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 text-slate-600 hover:bg-slate-100";
+            const activeBtn = "tab-btn flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 bg-brand-600 text-white shadow";
+
+            btnNova.className = inactiveBtn;
+            btnAlunos.className = inactiveBtn;
+            btnAdmin.className = inactiveBtn;
+
+            if (tabName === 'nova-ficha') {
+                secNova.classList.remove('hidden');
+                btnNova.className = activeBtn;
+            } else if (tabName === 'alunos') {
+                secAlunos.classList.remove('hidden');
+                btnAlunos.className = activeBtn;
+                renderAlunosView();
+            } else if (tabName === 'admin') {
+                secAdmin.classList.remove('hidden');
+                btnAdmin.className = activeBtn;
+                renderAdminTable();
+                updateStats();
+            }
+        }
+
+        function initCanvas() {
+            canvas = document.getElementById('signature-canvas');
+            if (!canvas) return;
+            ctx = canvas.getContext('2d');
+
+            ctx.strokeStyle = '#1e3a8a';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+
+            // Eventos de Mouse
+            canvas.onmousedown = (e) => { isDrawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); };
+            canvas.onmousemove = (e) => { if (isDrawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } };
+            canvas.onmouseup = () => { isDrawing = false; };
+            canvas.onmouseleave = () => { isDrawing = false; };
+
+            // Eventos de Touch
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                isDrawing = true;
+                ctx.beginPath();
+                ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+            }, { passive: false });
+
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+                ctx.stroke();
+            }, { passive: false });
+
+            canvas.addEventListener('touchend', () => { isDrawing = false; });
+        }
+
+        function clearSignatureCanvas() {
+            if (ctx && canvas) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const isConfirmed = document.getElementById('form-assinatura-confirm').checked;
+            if (!isConfirmed) {
+                showToast('Marque a confirmação de declaração autêntica para enviar.', 'warning');
+                return;
+            }
+
+            const id = document.getElementById('form-id').value || Date.now();
+            const fichas = getFichas();
+
+            // Extrair imagem do canvas se assinado
+            let sigImgData = null;
+            if (canvas) {
+                sigImgData = canvas.toDataURL();
+            }
+
+            const newFicha = {
+                id: Number(id),
+                aluno_nome: document.getElementById('form-aluno-nome').value.trim(),
+                aluno_numero: document.getElementById('form-aluno-numero').value.trim(),
+                professor: document.getElementById('form-professor').value,
+                componente: document.getElementById('form-componente').value,
+                turma: document.getElementById('form-turma').value,
+                data: document.getElementById('form-data').value,
+                panorama_desenvolvimento: document.getElementById('form-panorama-desenvolvimento').value,
+                panorama_postura: document.getElementById('form-panorama-postura').value,
+                aprendizagem_dificuldades: document.getElementById('form-aprendizagem-dificuldades').value,
+                aprendizagem_frequencia: document.getElementById('form-aprendizagem-frequencia').value,
+                destaques_positivos: document.getElementById('form-destaques-positivos').value,
+                destaques_atencao: document.getElementById('form-destaques-atencao').value,
+                encaminhamento_estrategias: document.getElementById('form-encaminhamento-estrategias').value,
+                encaminhamento_obs: document.getElementById('form-encaminhamento-obs').value,
+                sintese_geral: document.getElementById('form-sintese-geral').value,
+                
+                assinado_prof: true,
+                data_assinado_prof: new Date().toLocaleString('pt-BR'),
+                assinado_pedagoga: false,
+                nome_pedagoga: null,
+                data_assinado_pedagoga: null,
+                assinado_diretora: false,
+                nome_diretora: null,
+                data_assinado_diretora: null,
+                assinatura_prof_img: sigImgData
+            };
+
+            const index = fichas.findIndex(f => f.id === Number(id));
+            if (index >= 0) {
+                fichas[index] = { ...fichas[index], ...newFicha };
+            } else {
+                fichas.unshift(newFicha);
+            }
+
+            saveFichas(fichas);
+            showToast('Ficha individual gravada com sucesso!', 'success');
+            resetForm();
+            showTab('alunos');
+        }
+
+        function resetForm() {
+            document.getElementById('pre-conselho-form').reset();
+            document.getElementById('form-id').value = '';
+            document.getElementById('form-data').value = new Date().toISOString().split('T')[0];
+            clearSignatureCanvas();
+            if (currentUser && currentUser.role === 'professor') {
+                document.getElementById('form-professor').value = currentUser.name;
+            }
+        }
+
+        function renderAlunosView() {
+            const fichas = getFichas();
+            const searchText = document.getElementById('search-aluno-input').value.toLowerCase();
+            const filterTurma = document.getElementById('search-aluno-turma').value;
+
+            const container = document.getElementById('alunos-grouped-cards');
+            container.innerHTML = '';
+
+            // Group fichas by Student Name
+            const grouped = {};
+            fichas.forEach(f => {
+                if (filterTurma && f.turma !== filterTurma) return;
+                const matchName = f.aluno_nome.toLowerCase().includes(searchText);
+                const matchNum = f.aluno_numero.toLowerCase().includes(searchText);
+                if (searchText && !matchName && !matchNum) return;
+
+                if (!grouped[f.aluno_nome]) {
+                    grouped[f.aluno_nome] = {
+                        nome: f.aluno_nome,
+                        numero: f.aluno_numero,
+                        turma: f.turma,
+                        fichas: []
+                    };
+                }
+                grouped[f.aluno_nome].fichas.push(f);
+            });
+
+            const keys = Object.keys(grouped);
+            if (keys.length === 0) {
+                container.innerHTML = `<div class="col-span-full p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-400">
+                    <i class="fa-solid fa-user-slash text-3xl mb-2"></i>
+                    <p class="font-bold text-sm">Nenhum registro de aluno encontrado com os filtros atuais.</p>
+                </div>`;
+                return;
+            }
+
+            keys.forEach(alunoKey => {
+                const item = grouped[alunoKey];
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4 flex flex-col justify-between hover:border-brand-500/50 transition';
+                
+                let fichasHtml = '';
+                item.fichas.forEach(f => {
+                    fichasHtml += `
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs space-y-2">
+                            <div class="flex items-center justify-between font-bold text-slate-800">
+                                <span><i class="fa-solid fa-book-bookmark text-brand-600 mr-1"></i> ${f.componente}</span>
+                                <span class="text-[10px] text-slate-400 font-normal">${formatDate(f.data)}</span>
+                            </div>
+                            <p class="text-slate-600 line-clamp-2 italic">"${f.sintese_geral}"</p>
+                            <div class="flex items-center justify-between pt-1">
+                                <span class="text-[10px] text-slate-500">${f.professor}</span>
+                                <button onclick="openViewModal(${f.id})" class="bg-brand-50 hover:bg-brand-100 text-brand-700 px-2 py-1 rounded-lg text-[10px] font-bold flex items-center space-x-1">
+                                    <i class="fa-solid fa-eye"></i> <span>Ver Folha A4</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-start justify-between pb-3 border-b border-slate-100">
+                            <div>
+                                <h4 class="font-black text-slate-800 text-base flex items-center space-x-2">
+                                    <span>${item.nome}</span>
+                                </h4>
+                                <p class="text-xs font-semibold text-brand-600">${item.numero} • ${item.turma}</p>
+                            </div>
+                            <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                ${item.fichas.length} registro(s)
+                            </span>
+                        </div>
+                        <div class="space-y-2 mt-3">
+                            ${fichasHtml}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderAdminTable() {
+            const fichas = getFichas();
+            const tbody = document.getElementById('admin-fichas-list');
+            tbody.innerHTML = '';
+
+            if (fichas.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 font-bold">Nenhuma ficha lançada no sistema.</td></tr>`;
+                return;
+            }
+
+            fichas.forEach(f => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 border-b border-slate-100';
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-slate-800">
+                        <div>${f.aluno_nome}</div>
+                        <div class="text-[10px] text-slate-400 font-normal">${f.aluno_numero}</div>
+                    </td>
+                    <td class="p-3">
+                        <span class="bg-slate-100 px-2 py-0.5 rounded text-[10px] font-bold">${f.turma}</span>
+                        <div class="text-[11px] text-slate-600">${f.componente}</div>
+                    </td>
+                    <td class="p-3 text-slate-700">${f.professor}</td>
+                    <td class="p-3">${getStatusBadge(f.assinado_pedagoga, 'Pedagoga')}</td>
+                    <td class="p-3">${getStatusBadge(f.assinado_diretora, 'Diretora')}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="openViewModal(${f.id})" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1 rounded-xl text-xs font-bold flex items-center justify-center space-x-1 mx-auto shadow-sm">
+                            <i class="fa-solid fa-signature"></i>
+                            <span>Abrir</span>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateStats() {
+            const fichas = getFichas();
+            document.getElementById('stat-total').innerText = fichas.length;
+            document.getElementById('stat-pend-pedagoga').innerText = fichas.filter(f => !f.assinado_pedagoga).length;
+            document.getElementById('stat-pend-diretora').innerText = fichas.filter(f => f.assinado_pedagoga && !f.assinado_diretora).length;
+            document.getElementById('stat-concluidas').innerText = fichas.filter(f => f.assinado_pedagoga && f.assinado_diretora).length;
+        }
+
+        function openViewModal(id) {
+            currentActiveFichaId = id;
+            const fichas = getFichas();
+            const ficha = fichas.find(f => f.id === id);
+            if (!ficha) return;
+
+            document.getElementById('doc-aluno-nome').innerText = ficha.aluno_nome || '-';
+            document.getElementById('doc-aluno-numero').innerText = ficha.aluno_numero || '-';
+            document.getElementById('doc-professor').innerText = ficha.professor || '-';
+            document.getElementById('doc-componente').innerText = ficha.componente || '-';
+            document.getElementById('doc-turma').innerText = ficha.turma || '-';
+            document.getElementById('doc-data').innerText = formatDate(ficha.data);
+
+            document.getElementById('doc-panorama-desenvolvimento').innerText = ficha.panorama_desenvolvimento || '-';
+            document.getElementById('doc-panorama-postura').innerText = ficha.panorama_postura || '-';
+            document.getElementById('doc-aprendizagem-dificuldades').innerText = ficha.aprendizagem_dificuldades || '-';
+            document.getElementById('doc-aprendizagem-frequencia').innerText = ficha.aprendizagem_frequencia || '-';
+            document.getElementById('doc-destaques-positivos').innerText = ficha.destaques_positivos || '-';
+            document.getElementById('doc-destaques-atencao').innerText = ficha.destaques_atencao || '-';
+            document.getElementById('doc-encaminhamento-estrategias').innerText = ficha.encaminhamento_estrategias || '-';
+            document.getElementById('doc-encaminhamento-obs').innerText = ficha.encaminhamento_obs || 'Sem observações adicionais.';
+            document.getElementById('doc-sintese-geral').innerText = ficha.sintese_geral || '-';
+
+            // Assinatura do Professor (Canvas ou Texto)
+            const profStamp = document.getElementById('doc-sign-prof-stamp');
+            if (ficha.assinatura_prof_img) {
+                profStamp.innerHTML = `<img src="${ficha.assinatura_prof_img}" class="max-h-12 max-w-[150px] object-contain">`;
+            } else {
+                profStamp.innerHTML = `<div class="text-emerald-700 font-bold text-[10px]"><i class="fa-solid fa-circle-check"></i> Assinado Digitalmente<br><span class="text-[9px] text-slate-400 font-normal">${ficha.data_assinado_prof || ''}</span></div>`;
+            }
+
+            // Assinaturas Pedagoga / Diretora
+            const pedStamp = document.getElementById('doc-sign-pedagoga-stamp');
+            pedStamp.innerHTML = ficha.assinado_pedagoga 
+                ? `<div class="text-emerald-700 font-bold text-[10px]"><i class="fa-solid fa-circle-check"></i> Assinado: ${ficha.nome_pedagoga}<br><span class="text-[9px] text-slate-400 font-normal">${ficha.data_assinado_pedagoga}</span></div>`
+                : `<span class="text-[10px] text-amber-600 font-semibold">Pendente de validação</span>`;
+
+            const dirStamp = document.getElementById('doc-sign-diretora-stamp');
+            dirStamp.innerHTML = ficha.assinado_diretora 
+                ? `<div class="text-emerald-700 font-bold text-[10px]"><i class="fa-solid fa-circle-check"></i> Assinado: ${ficha.nome_diretora}<br><span class="text-[9px] text-slate-400 font-normal">${ficha.data_assinado_diretora}</span></div>`
+                : `<span class="text-[10px] text-amber-600 font-semibold">Pendente de validação</span>`;
+
+            // Botões de Ação de Assinatura para Gestão
+            const pedAction = document.getElementById('action-sign-pedagoga');
+            if (!ficha.assinado_pedagoga && (currentUser.role === 'pedagoga' || currentUser.role === 'diretora')) {
+                pedAction.innerHTML = `<button onclick="signFicha('pedagoga')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] shadow">Assinar (Pedagoga)</button>`;
+            } else pedAction.innerHTML = '';
+
+            const dirAction = document.getElementById('action-sign-diretora');
+            if (!ficha.assinado_diretora && currentUser.role === 'diretora') {
+                dirAction.innerHTML = `<button onclick="signFicha('diretora')" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] shadow">Assinar (Diretora)</button>`;
+            } else dirAction.innerHTML = '';
+
+            toggleModal('view-modal', true);
+        }
+
+        function signFicha(role) {
+            if (!currentActiveFichaId) return;
+
+            const fichas = getFichas();
+            const index = fichas.findIndex(f => f.id === currentActiveFichaId);
+            if (index < 0) return;
+
+            const nowStr = new Date().toLocaleString('pt-BR');
+
+            if (role === 'pedagoga') {
+                fichas[index].assinado_pedagoga = true;
+                fichas[index].nome_pedagoga = currentUser.name;
+                fichas[index].data_assinado_pedagoga = nowStr;
+                showToast('Assinado com sucesso pela Pedagoga!', 'success');
+            } else if (role === 'diretora') {
+                fichas[index].assinado_diretora = true;
+                fichas[index].nome_diretora = currentUser.name;
+                fichas[index].data_assinado_diretora = nowStr;
+                showToast('Assinado com sucesso pela Diretora!', 'success');
+            }
+
+            saveFichas(fichas);
+            openViewModal(currentActiveFichaId);
+            renderAlunosView();
+            renderAdminTable();
+            updateStats();
+        }
+
+        function printDocument() {
+            window.print();
+        }
+
+        function toggleModal(modalId, show) {
+            const modal = document.getElementById(modalId);
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        function getStatusBadge(isSigned, label) {
+            if (isSigned) {
+                return `<span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800"><i class="fa-solid fa-check"></i> <span>OK</span></span>`;
+            } else {
+                return `<span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800"><i class="fa-solid fa-clock"></i> <span>Pendente</span></span>`;
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const parts = dateString.split('-');
+            if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            return dateString;
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast-notification');
+            const icon = document.getElementById('toast-icon');
+            const msg = document.getElementById('toast-message');
+
+            msg.innerText = message;
+
+            if (type === 'success') {
+                toast.className = 'mb-4 p-4 rounded-xl flex items-center justify-between shadow-md bg-emerald-50 text-emerald-800 border border-emerald-200';
+                icon.className = 'fa-solid fa-circle-check text-emerald-600 text-lg';
+            } else if (type === 'warning') {
+                toast.className = 'mb-4 p-4 rounded-xl flex items-center justify-between shadow-md bg-amber-50 text-amber-800 border border-amber-200';
+                icon.className = 'fa-solid fa-triangle-exclamation text-amber-600 text-lg';
+            } else {
+                toast.className = 'mb-4 p-4 rounded-xl flex items-center justify-between shadow-md bg-blue-50 text-blue-800 border border-blue-200';
+                icon.className = 'fa-solid fa-circle-info text-blue-600 text-lg';
+            }
+
+            toast.classList.remove('hidden');
+            setTimeout(() => hideToast(), 4000);
+        }
+
+        function hideToast() {
+            document.getElementById('toast-notification').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
